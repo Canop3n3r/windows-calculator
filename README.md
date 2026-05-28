@@ -100,7 +100,7 @@ windows-calculator/
 │   ├── core/
 │   │   └── math_engine.py       # The symbolic + numeric brain
 │   ├── grapher/
-│   │   └── grapher_2d.py        # 2D + calculus visualizations
+│   │   └── grapher_2d.py        # Grapher2D: multi-function + draggable Derivative Explorer (the killer calculus visualization)
 │   ├── calculator/
 │   ├── calculus/
 │   └── main.py                  # New tabbed high-tier shell

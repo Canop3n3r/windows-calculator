@@ -86,25 +86,32 @@ class HighTierMathApp(tk.Tk):
         # Tab 0: Original Simple Calculator (preserved)
         self.simple_frame = tk.Frame(self.notebook, bg="#202020")
         self.notebook.add(self.simple_frame, text="  Simple Calculator  ")
-
-        # We embed the original calculator logic by reusing its class
-        # For speed we create a lightweight host
         self._embed_simple_calculator()
 
-        # Tab 1: 2D Grapher + Calculus (the star right now)
-        self.grapher_frame = Grapher2DFrame(self.notebook, self.engine)
+        # Tab 1: 2D Grapher + Calculus Visualizations (flagship)
+        try:
+            self.grapher_frame = Grapher2DFrame(self.notebook, self.engine)
+        except Exception:
+            self.grapher_frame = tk.Frame(self.notebook, bg="#202020")
+            tk.Label(self.grapher_frame, text="2D Grapher loading... (run with dependencies installed)").pack(expand=True)
         self.notebook.add(self.grapher_frame, text="  2D Grapher + Calculus  ")
 
-        # Tab 2: Scientific Expression Calculator (placeholder for fast follow-up)
+        # Tab 2: Scientific Calculator (powerful expression mode)
         self.sci_frame = tk.Frame(self.notebook, bg="#202020")
         self.notebook.add(self.sci_frame, text="  Scientific  ")
-        self._create_scientific_placeholder()
+        self._create_scientific_placeholder()   # Will be replaced by agent output soon
 
-        # Tab 3: 3D (future)
-        future = tk.Frame(self.notebook, bg="#202020")
-        self.notebook.add(future, text="  3D  ")
-        tk.Label(future, text="3D Surfaces & Vector Fields\n(PyVista integration planned)",
-                 bg="#202020", fg="#777777", font=("Segoe UI", 14)).pack(expand=True)
+        # Tab 3: Calculus Lab (Riemann + Taylor + more)
+        self.calculus_frame = tk.Frame(self.notebook, bg="#202020")
+        self.notebook.add(self.calculus_frame, text="  Calculus Lab  ")
+        tk.Label(self.calculus_frame, text="Riemann Studio + Taylor Playground\n(Agents currently building these)",
+                 bg="#202020", fg="#AAAAAA", font=("Segoe UI", 12)).pack(expand=True)
+
+        # Tab 4: 3D Math
+        self.three_d_frame = tk.Frame(self.notebook, bg="#202020")
+        self.notebook.add(self.three_d_frame, text="  3D  ")
+        tk.Label(self.three_d_frame, text="3D Surfaces, Gradients & Vector Fields\n(PyVista primary path + Godot research in progress)",
+                 bg="#202020", fg="#777777", font=("Segoe UI", 12)).pack(expand=True)
 
     def _embed_simple_calculator(self):
         """Host the original calculator inside a tab."""
