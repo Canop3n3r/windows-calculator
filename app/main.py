@@ -54,8 +54,8 @@ class HighTierMathApp(tk.Tk):
         self._create_header()
         self._create_notebook()
 
-        # Start with the most impressive tab visible: 2D Grapher (rich interactive visualizations)
-        self.notebook.select(1)
+        # Start on the Scientific Calculator (the actually useful modern one)
+        self.notebook.select(0)
 
     def _create_header(self):
         header = tk.Frame(self, bg="#111111")
@@ -104,16 +104,7 @@ class HighTierMathApp(tk.Tk):
                      bg="#202020", fg="#F87171", font=("Segoe UI", 11)).pack(expand=True, pady=30)
             self.notebook.add(self.simple_frame, text="  Simple  ")
 
-        # Tab 1: 2D Grapher (flagship interactive calculus visualization — start here)
-        try:
-            self.grapher_frame = Grapher2DFrame(self.notebook, self.engine)
-        except Exception as exc:
-            self.grapher_frame = tk.Frame(self.notebook, bg="#202020")
-            tk.Label(self.grapher_frame, text=f"2D Grapher failed to load:\n{exc}",
-                     bg="#202020", fg="#F87171", font=("Segoe UI", 11)).pack(expand=True, pady=30)
-        self.notebook.add(self.grapher_frame, text="  2D Grapher  ")
-
-        # Tab 2: Scientific (SymPy expression mode with history & calculus actions)
+        # Tab 1: Scientific (SymPy expression mode with history & calculus actions) — primary powerful tool
         try:
             self.sci_frame = ScientificCalculatorFrame(self.notebook, self.engine)
         except Exception as exc:
@@ -122,39 +113,55 @@ class HighTierMathApp(tk.Tk):
                      bg="#202020", fg="#F87171", font=("Segoe UI", 11)).pack(expand=True, pady=30)
         self.notebook.add(self.sci_frame, text="  Scientific  ")
 
-        # Tab 3: Calculus Lab — contains Riemann + Taylor as sub-tabs (clean grouped integration)
+        # Tab 3: Visual Math Lab — grouped advanced visualizations (much cleaner)
         try:
-            calc_container = tk.Frame(self.notebook, bg="#202020")
-            inner = ttk.Notebook(calc_container)
-            inner.pack(fill="both", expand=True, padx=2, pady=2)
+            visual_container = tk.Frame(self.notebook, bg="#202020")
+            
+            # Add a short explanation at the top of the Visual Math Lab so it's not confusing
+            header = tk.Frame(visual_container, bg="#202020")
+            header.pack(fill="x", padx=8, pady=(4, 0))
+            tk.Label(header, 
+                     text="Interactive visualizations to help you actually understand calculus concepts.",
+                     bg="#202020", fg="#AAAAAA", font=("Segoe UI", 10)).pack(anchor="w")
 
-            # Riemann sub-tab
+            inner = ttk.Notebook(visual_container)
+            inner.pack(fill="both", expand=True, padx=4, pady=4)
+
+            # Derivative Explorer (most educational single feature)
+            try:
+                deriv_tab = Grapher2DFrame(inner, self.engine)  # reuse the powerful one
+            except Exception as exc:
+                deriv_tab = tk.Frame(inner, bg="#202020")
+                tk.Label(deriv_tab, text=f"Derivative Explorer failed to load:\n{exc}",
+                         bg="#202020", fg="#F87171", font=("Segoe UI", 11)).pack(expand=True, pady=30)
+            inner.add(deriv_tab, text="  Derivative Explorer  ")
+
+            # Riemann Studio
             try:
                 riemann_tab = RiemannStudioFrame(inner, self.engine)
             except Exception as exc:
                 riemann_tab = tk.Frame(inner, bg="#202020")
                 tk.Label(riemann_tab, text=f"Riemann Studio failed to load:\n{exc}",
                          bg="#202020", fg="#F87171", font=("Segoe UI", 11)).pack(expand=True, pady=30)
-            inner.add(riemann_tab, text="  Riemann Sums  ")
+            inner.add(riemann_tab, text="  Riemann / Integrals  ")
 
-            # Taylor sub-tab (newly wired + integrated)
+            # Taylor Playground
             try:
                 taylor_tab = TaylorPlaygroundFrame(inner, self.engine)
             except Exception as exc:
                 taylor_tab = tk.Frame(inner, bg="#202020")
-                tk.Label(taylor_tab, text=f"Taylor Series Playground failed to load:\n{exc}",
+                tk.Label(taylor_tab, text=f"Taylor Series failed to load:\n{exc}",
                          bg="#202020", fg="#F87171", font=("Segoe UI", 11)).pack(expand=True, pady=30)
             inner.add(taylor_tab, text="  Taylor Series  ")
 
-            # Default inner selection to Taylor (impressive new playground)
-            inner.select(1)
+            inner.select(0)  # Start on Derivative Explorer (easiest "wow" moment)
 
-            self.notebook.add(calc_container, text="  Calculus Lab  ")
+            self.notebook.add(visual_container, text="  Visual Math Lab  ")
         except Exception as exc:
-            calc_container = tk.Frame(self.notebook, bg="#202020")
-            tk.Label(calc_container, text=f"Calculus Lab failed to load:\n{exc}",
+            visual_container = tk.Frame(self.notebook, bg="#202020")
+            tk.Label(visual_container, text=f"Visual Math Lab failed to load:\n{exc}",
                      bg="#202020", fg="#F87171", font=("Segoe UI", 11)).pack(expand=True, pady=30)
-            self.notebook.add(calc_container, text="  Calculus Lab  ")
+            self.notebook.add(visual_container, text="  Visual Math Lab  ")
 
         # Tab 4: 3D Surfaces
         try:
@@ -187,24 +194,27 @@ class HighTierMathApp(tk.Tk):
         self.notebook.add(self.history_frame, text="  📓 Notebook / History  ")
 
     def _embed_simple_calculator(self):
-        """Host the original calculator inside a tab (preserved exactly)."""
+        """Legacy simple calculator — made painfully clear because the old design was confusing."""
         container = tk.Frame(self.simple_frame, bg="#202020")
-        container.pack(fill="both", expand=True)
+        container.pack(fill="both", expand=True, padx=20, pady=20)
 
-        # Reuse the proven original class (minimal visual host)
-        self.simple_calc = OriginalSimpleCalculator.__new__(OriginalSimpleCalculator)
+        tk.Label(container, 
+                 text="Legacy Simple Calculator",
+                 bg="#202020", fg="#FFFFFF", font=("Segoe UI", 16, "bold")).pack(pady=(0, 10))
 
-        tk.Label(container, text="Classic Simple Calculator",
-                 bg="#202020", fg="#AAAAAA", font=("Segoe UI", 10)).pack(pady=8)
+        tk.Label(container,
+                 text="WARNING: This tab does NOT contain a working calculator.\nClicking the button below will try to open the old basic calculator\nin a completely separate window.",
+                 bg="#202020", fg="#F87171", font=("Segoe UI", 11), justify="center").pack(pady=8)
 
         ttk.Button(
             container,
-            text="Open Classic Calculator in Separate Window",
+            text="Open Legacy Calculator in New Window",
             command=self._launch_classic_separate
-        ).pack(pady=20)
+        ).pack(pady=15)
 
-        tk.Label(container, text="The original calculator is fully preserved.\nAdvanced symbolic, graphing, and calculus tools are in the other tabs.",
-                 bg="#202020", fg="#888888").pack()
+        tk.Label(container,
+                 text="This exists only for historical reasons.\nFor actual use, please use the 'Scientific Calculator' tab (the second tab).",
+                 bg="#202020", fg="#4ADE80", font=("Segoe UI", 10), justify="center").pack(pady=10)
 
     def _launch_classic_separate(self):
         """Launch the original calculator in its own window so it keeps working perfectly."""
