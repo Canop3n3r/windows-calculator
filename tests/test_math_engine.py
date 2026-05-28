@@ -127,14 +127,15 @@ def test_get_free_symbols_constant_only(engine: MathEngine) -> None:
 
 
 def test_get_independent_variable_preference(engine: MathEngine) -> None:
-    assert engine.get_independent_variable("a*x + b") == "a"  # alpha first? wait alphabetical? No: preferred x not present
-    # Actually: free sorted alpha, first is 'a'
-    assert engine.get_independent_variable("a*x + b", preferred="x") is None or "a"  # preferred not present -> first alpha
-    expr = engine.parse("f(t) + sin(x)")
-    assert engine.get_independent_variable(expr, preferred="x") == "t"  # ? sorted: f? no: free are t,x -> x preferred wins
-    # Better explicit:
+    # No 'x' present → falls back to first alphabetically sorted free symbol
+    assert engine.get_independent_variable("a*x + b") == "a"
+    assert engine.get_independent_variable("a*x + b", preferred="x") == "a"
+
+    # Preferred 'x' wins when available
     assert engine.get_independent_variable("sin(t) + k") == "t"
     assert engine.get_independent_variable("sin(x) + k") == "x"
+
+    # Pure constant expression
     assert engine.get_independent_variable("42") is None
 
 

@@ -18,6 +18,7 @@ from app.grapher.grapher_2d import Grapher2DFrame
 from app.grapher.plot3d import Plot3DFrame
 from app.calculator.scientific import ScientificCalculatorFrame
 from app.calculus.riemann_studio import RiemannStudioFrame
+from app.calculus.taylor_playground import TaylorPlaygroundFrame
 
 # Import the original calculator (we keep it working)
 import sys
@@ -119,6 +120,15 @@ class HighTierMathApp(tk.Tk):
                 bg="#202020", fg="#F87171", font=("Segoe UI", 11)
             ).pack(expand=True, pady=30)
         self.notebook.add(self.calculus_frame, text="  Calculus Lab • Riemann  ")
+
+        # Taylor Series tab (newly added)
+        try:
+            self.taylor_frame = TaylorPlaygroundFrame(self.notebook, self.engine)
+        except Exception as exc:
+            self.taylor_frame = tk.Frame(self.notebook, bg="#202020")
+            tk.Label(self.taylor_frame, text=f"Taylor Playground failed to load:\n{exc}",
+                     bg="#202020", fg="#F87171", font=("Segoe UI", 11)).pack(expand=True, pady=30)
+        self.notebook.add(self.taylor_frame, text="  Taylor Series  ")
 
         # Tab 4: 3D Math (matplotlib mplot3d skeleton today — PyVista upgrade path documented)
         try:
