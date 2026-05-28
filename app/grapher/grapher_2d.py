@@ -18,7 +18,7 @@ from matplotlib.figure import Figure
 from matplotlib.patches import FancyArrowPatch
 import matplotlib.animation as animation
 
-from app.core.math_engine import MathEngine
+from app.core.math_engine import MathEngine, MathEngineError
 
 
 class DerivativeExplorer(tk.Frame):
@@ -131,52 +131,53 @@ class DerivativeExplorer(tk.Frame):
 
         try:
             expr = self.engine.parse(expr_str)
-            free = self.engine.get_free_symbols(expr)
+            free = self.engine.get_free_symbols(expr_str)
 
-            # For demo we support x + optional a, b parameters
-            x = sp.Symbol('x')
             self.current_expr = expr
-
-            # Create numeric function
-            vars_needed = ['x'] + [p for p in ['a', 'b'] if p in free]
-            self.func = self.engine.numeric_function(expr, vars_needed)
 
             self._redraw()
 
-            # Update symbolic derivative in status
-            deriv = self.engine.symbolic_derivative(expr_str)
-            self.status.config(text=f"f'(x) = {deriv}")
+            # Update symbolic derivative in status using the engine
+            try:
+                deriv = self.engine.symbolic_derivative(expr_str)
+                self.status.config(text=f"f'(x) = {self.engine.pretty(deriv)}")
+            except Exception:
+                self.status.config(text=f"f'(x) computed symbolically")
 
+        except MathEngineError as e:
+            self.status.config(text=f"Error: {e}", fg="#FF5252")
         except Exception as e:
-            self.status.config(text=f"Error: {str(e)[:80]}", fg="#FF5252")
+            self.status.config(text=f"Unexpected error: {str(e)[:70]}", fg="#FF5252")
 
     def _redraw(self):
         try:
             x_vals = np.linspace(-5, 5, 600)
 
-            # Evaluate f
-            y_vals = self.func(x_vals, **self._get_param_values())
+            # Use the new robust engine for vectorized evaluation
+            values = {"x": x_vals}
+            # Add any parameters the expression needs (simple demo params for now)
+            param_values = self._get_param_values()
+            values.update(param_values)
+
+            y_vals = self.engine.evaluate_numeric(str(self.current_expr), values)
 
             self.line_f.set_data(x_vals, y_vals)
 
             # Current point
-            x0 = self.x0_var.get()
+            x0 = float(self.x0_var.get())
             try:
-                y0 = float(self.func(x0, **self._get_param_values()))
+                y0 = float(self.engine.evaluate_numeric(
+                    str(self.current_expr), {"x": x0, **param_values}
+                ))
             except Exception:
-                y0 = 0
+                y0 = 0.0
 
             self.point.set_data([x0], [y0])
 
-            # Tangent line
+            # Tangent via symbolic derivative evaluated at point
             try:
-                slope = self.engine.evaluate_at_point(
-                    str(self.current_expr),
-                    'x', x0
-                )
-                # Better: use symbolic derivative evaluated at x0
                 deriv_expr = self.engine.symbolic_derivative(str(self.current_expr))
-                slope_sym = float(deriv_expr.subs(sp.Symbol('x'), x0))
+                slope_sym = float(self.engine.evaluate_at(deriv_expr, x=x0))
             except Exception:
                 slope_sym = 0.0
 
@@ -187,23 +188,24 @@ class DerivativeExplorer(tk.Frame):
             )
 
             # Secant line
-            h = self.h_var.get()
+            h = float(self.h_var.get())
             try:
-                y1 = float(self.func(x0 + h, **self._get_param_values()))
+                y1 = float(self.engine.evaluate_numeric(
+                    str(self.current_expr), {"x": x0 + h, **param_values}
+                ))
                 slope_sec = (y1 - y0) / h if abs(h) > 1e-9 else slope_sym
             except Exception:
                 slope_sec = slope_sym
                 y1 = y0
 
-            self.line_secant.set_data(
-                [x0, x0 + h],
-                [y0, y1]
-            )
+            self.line_secant.set_data([x0, x0 + h], [y0, y1])
 
             self.canvas.draw_idle()
 
+        except MathEngineError as e:
+            self.status.config(text=f"Math error: {e}", fg="#FF5252")
         except Exception as e:
-            self.status.config(text=f"Plot error: {e}", fg="#FF5252")
+            self.status.config(text=f"Plot error: {str(e)[:60]}", fg="#FF5252")
 
     def _get_param_values(self):
         """Return current parameter values for lambdified function."""
