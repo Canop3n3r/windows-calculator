@@ -323,7 +323,7 @@ class MathEngine:
     ) -> sp.Expr:
         """Compute one-sided or two-sided limit.
 
-        direction: '+' (right), '-' (left), or '+-' / None (both / real).
+        direction: '+' (right), '-' (left), or '+-' / '' / None (two-sided / real).
         """
         if isinstance(expr, str):
             expr = self.parse(expr)
@@ -331,8 +331,13 @@ class MathEngine:
 
         try:
             pt = self.parse(str(point)) if isinstance(point, str) else point
-            dir_arg = None if direction in {"+-", ""} else direction
-            return limit(expr, sym, pt, dir=dir_arg)
+
+            # SymPy accepts dir='+-' (or omits it) for two-sided limits.
+            # Passing None causes an error, so we conditionally include the dir arg.
+            if direction in {"+-", "", None}:
+                return limit(expr, sym, pt)
+            else:
+                return limit(expr, sym, pt, dir=direction)
         except Exception as exc:
             raise MathEngineError(f"Failed to compute limit: {exc}") from exc
 

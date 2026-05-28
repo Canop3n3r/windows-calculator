@@ -445,6 +445,11 @@ class ScientificCalculator(tk.Frame):
         ).pack(side="left", padx=4)
 
         ttk.Button(
+            result_actions, text="💾 Save to Notebook",
+            command=self._save_to_notebook, style="SciSmall.TButton"
+        ).pack(side="left", padx=4)
+
+        ttk.Button(
             result_actions, text="Clear Results",
             command=self._clear_results, style="SciSmall.TButton"
         ).pack(side="right", padx=2)
@@ -1019,6 +1024,35 @@ class ScientificCalculator(tk.Frame):
         self.history.clear()
         self.history_display.clear()
         self.history_lb.delete(0, tk.END)
+
+    def _save_to_notebook(self):
+        """Save the current expression + pretty result to the shared cross-tool Notebook."""
+        expr = self.expr_var.get().strip()
+        if not expr:
+            self._show_error("Enter an expression first, then Save to Notebook")
+            return
+
+        pretty = self.pretty_var.get()
+        if pretty == "—":
+            pretty = ""
+
+        try:
+            from app.ui.history_notebook import HistoryNotebook
+
+            HistoryNotebook.add_entry(
+                expression=expr,
+                result=pretty,
+                source="Scientific",
+                pretty=pretty,
+            )
+            old_text = self.status_label.cget("text")
+            self.status_label.config(text="💾 Saved to Notebook", fg=DARK["success"])
+            self.after(
+                1400,
+                lambda: self.status_label.config(text=old_text, fg=DARK["success"]),
+            )
+        except Exception as exc:
+            self._show_error(f"Notebook save failed: {exc}")
 
     # -------------------------------------------------------------------------
     # CLIPBOARD & ERROR UX
