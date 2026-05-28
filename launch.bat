@@ -1,5 +1,5 @@
 @echo off
-REM Windows Calculator Launcher
+REM Original Simple Calculator (preserved)
 cd /d "%~dp0"
 python calculator.py
 if errorlevel 1 (

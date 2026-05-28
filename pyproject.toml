@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mathforge"
+version = "0.2.0-dev"
+description = "High-tier scientific and visual mathematics tool with symbolic calculus and interactive visualizations"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "canop3n3r"}]
+
+dependencies = [
+    "sympy>=1.13",
+    "numpy>=2.0",
+    "matplotlib>=3.9",
+]
+
+[project.scripts]
+mathforge = "app.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.ruff]
+line-length = 100
