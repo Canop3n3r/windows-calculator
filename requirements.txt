@@ -2,6 +2,7 @@
 sympy>=1.13.0
 numpy>=2.0.0
 matplotlib>=3.9.0
+Pillow>=10.0.0   # Required by matplotlib in some color / backend code paths (critical for frozen builds)
 
 # For future high-quality integrated 3D (Phase 2+)
 # pyvista>=0.43

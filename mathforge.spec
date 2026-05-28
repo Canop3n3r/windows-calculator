@@ -66,6 +66,12 @@ a = Analysis(
         "matplotlib.figure",
         "matplotlib.pyplot",
         "matplotlib.backends",
+
+        # --- Pillow (required by matplotlib.colors and some TkAgg paths) ---
+        "PIL",
+        "PIL.Image",
+        "PIL.ImageTk",
+        "PIL._tkinter_finder",
         # --- Tkinter (stdlib but PyInstaller sometimes needs explicit help on Windows) ---
         "tkinter",
         "tkinter.ttk",
@@ -96,7 +102,7 @@ a = Analysis(
         # Exclude heavy optional scientific libs not used (keeps size down)
         "scipy",
         "pandas",
-        "PIL",
+        # NOTE: Do NOT exclude PIL — matplotlib.colors and some backends need it at runtime
         "PySide6",
         "PyQt6",
         "pyvista",
