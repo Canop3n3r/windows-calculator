@@ -1,0 +1,5 @@
+# No runtime dependencies required.
+# This calculator uses only Python standard library (tkinter, math, decimal, re).
+
+# For building a standalone .exe (optional):
+# pyinstaller>=6.0.0
