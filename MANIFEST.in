@@ -1,0 +1,36 @@
+# MANIFEST.in — Controls files included in source distributions (sdist)
+# Used by setuptools for `python -m build` and `pip install .`
+
+include README.md
+include LICENSE*
+include requirements.txt
+include pyproject.toml
+
+# Include launchers and build tooling
+include launch*.py
+include launch*.bat
+include build_exe.py
+include *.spec
+
+# Core application package (explicit safety net)
+graft app
+
+# Documentation & examples (when added)
+graft docs
+graft examples
+
+# Test suite (useful for downstream packagers and CI)
+graft tests
+
+# Exclude compiled artifacts and caches from sdist
+prune __pycache__
+prune *.egg-info
+prune build
+prune dist
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.so
+global-exclude .DS_Store
+global-exclude Thumbs.db
+global-exclude *.log
+global-exclude *.tmp

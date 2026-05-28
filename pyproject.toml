@@ -7,22 +7,89 @@ name = "mathforge"
 version = "0.2.0-dev"
 description = "High-tier scientific and visual mathematics tool with symbolic calculus and interactive visualizations"
 readme = "README.md"
-requires-python = ">=3.11"
 license = {text = "MIT"}
-authors = [{name = "canop3n3r"}]
-
+requires-python = ">=3.11"
+authors = [
+    {name = "canop3n3r"}
+]
+keywords = [
+    "math",
+    "calculus",
+    "symbolic",
+    "graphing",
+    "visualization",
+    "sympy",
+    "education",
+    "scientific",
+    "mathematics",
+    "derivative",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Environment :: Win32 (MS Windows)",
+    "Natural Language :: English",
+]
 dependencies = [
     "sympy>=1.13",
     "numpy>=2.0",
     "matplotlib>=3.9",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+    "mypy>=1.10",
+]
+packaging = [
+    "pyinstaller>=6.0",
+]
+
 [project.scripts]
 mathforge = "app.main:main"
+
+[project.urls]
+Homepage = "https://github.com/canop3n3r/mathforge"
+Repository = "https://github.com/canop3n3r/mathforge"
+Issues = "https://github.com/canop3n3r/mathforge/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["app*"]
+exclude = ["tests*", "tests.*", "*.tests", "*.tests.*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.txt", "*.rst"]
+"app" = ["**/*.py"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
 
 [tool.ruff]
 line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+ignore = ["E501"]  # line length handled by formatter
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

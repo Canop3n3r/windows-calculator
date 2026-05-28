@@ -64,6 +64,7 @@ python calculator.py
   - Move the point x₀ live
   - See the tangent line update in real time
   - Watch the secant line animate toward the tangent as h → 0 — this is the *definition of the derivative* made visceral
+- **Full Scientific Expression Calculator** — large input with complete SymPy syntax, one-click Derivative / Integral (def+indef) / Limit / Taylor / Simplify / Factor, live parameter panel for numeric approx, clickable 20-entry history, LaTeX + pretty + high-precision numeric displays, smart insert buttons, dark modern UI. Immediately usable.
 - Clean dark theme consistent with modern Windows tools
 - Preserved original simple calculator (zero regression)
 
@@ -71,8 +72,8 @@ python calculator.py
 
 **Phase 1 (current — moving extremely fast)**
 - Riemann / Integral Studio with live partition animation
-- Full expression scientific calculator mode
-- Taylor series convergence playground
+- ✅ Full expression scientific calculator mode (COMPLETE — see Scientific tab)
+- Taylor series convergence playground (partially delivered via Scientific calculator Taylor action)
 
 **Phase 2**
 - Multiple functions + area between curves

@@ -20,9 +20,14 @@ wheels/
 .installed.cfg
 *.egg
 
-# PyInstaller
+# PyInstaller (build artifacts only)
 *.manifest
-*.spec
+build/
+dist/
+
+# Keep our packaging specification under version control
+# !mathforge.spec   (explicitly allowed below via negation if needed)
+# We commit mathforge.spec and build_exe.py for reproducible builds.
 
 # Virtual environments
 .venv/

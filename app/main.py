@@ -4,10 +4,10 @@ High-Tier Scientific & Visual Math Tool — Main Application
 This is the evolution of the original Windows Calculator into a serious
 educational and exploratory mathematics platform.
 
-Modes:
-- Simple Calculator (original behavior preserved)
-- Scientific / Expression mode (coming fast)
-- 2D Grapher + Calculus Visualizations (first high-impact feature live)
+Modes (all live):
+- Simple Calculator (original behavior fully preserved)
+- Scientific Expression Calculator (SymPy-powered input, calculus actions, history, parameters)
+- 2D Grapher + Derivative Explorer (flagship interactive calculus visualization)
 """
 
 import tkinter as tk
@@ -15,6 +15,9 @@ from tkinter import ttk
 
 from app.core.math_engine import MathEngine
 from app.grapher.grapher_2d import Grapher2DFrame
+from app.grapher.plot3d import Plot3DFrame
+from app.calculator.scientific import ScientificCalculatorFrame
+from app.calculus.riemann_studio import RiemannStudioFrame
 
 # Import the original calculator (we keep it working)
 import sys
@@ -45,7 +48,7 @@ class HighTierMathApp(tk.Tk):
         self._create_header()
         self._create_notebook()
 
-        # Start with the powerful Grapher + Calculus tab visible
+        # Start with the powerful Grapher + Derivative Explorer (index 1 after Simple)
         self.notebook.select(1)
 
     def _create_header(self):
@@ -96,22 +99,34 @@ class HighTierMathApp(tk.Tk):
             tk.Label(self.grapher_frame, text="2D Grapher loading... (run with dependencies installed)").pack(expand=True)
         self.notebook.add(self.grapher_frame, text="  2D Grapher + Calculus  ")
 
-        # Tab 2: Scientific Calculator (powerful expression mode)
-        self.sci_frame = tk.Frame(self.notebook, bg="#202020")
+        # Tab 2: Scientific Calculator — full SymPy expression mode with history & quick calculus actions
+        try:
+            self.sci_frame = ScientificCalculatorFrame(self.notebook, self.engine)
+        except Exception as exc:
+            self.sci_frame = tk.Frame(self.notebook, bg="#202020")
+            tk.Label(self.sci_frame, text=f"Scientific Calculator failed to load:\n{exc}",
+                     bg="#202020", fg="#F87171", font=("Segoe UI", 11)).pack(expand=True, pady=30)
         self.notebook.add(self.sci_frame, text="  Scientific  ")
-        self._create_scientific_placeholder()   # Will be replaced by agent output soon
 
-        # Tab 3: Calculus Lab (Riemann + Taylor + more)
-        self.calculus_frame = tk.Frame(self.notebook, bg="#202020")
-        self.notebook.add(self.calculus_frame, text="  Calculus Lab  ")
-        tk.Label(self.calculus_frame, text="Riemann Studio + Taylor Playground\n(Agents currently building these)",
-                 bg="#202020", fg="#AAAAAA", font=("Segoe UI", 12)).pack(expand=True)
+        # Tab 3: Calculus Lab — Riemann / Integral Studio (fully implemented)
+        try:
+            self.calculus_frame = RiemannStudioFrame(self.notebook, self.engine)
+        except Exception as exc:
+            self.calculus_frame = tk.Frame(self.notebook, bg="#202020")
+            tk.Label(
+                self.calculus_frame,
+                text=f"Riemann / Integral Studio failed to load:\n{exc}",
+                bg="#202020", fg="#F87171", font=("Segoe UI", 11)
+            ).pack(expand=True, pady=30)
+        self.notebook.add(self.calculus_frame, text="  Calculus Lab • Riemann  ")
 
-        # Tab 4: 3D Math
-        self.three_d_frame = tk.Frame(self.notebook, bg="#202020")
+        # Tab 4: 3D Math (matplotlib mplot3d skeleton today — PyVista upgrade path documented)
+        try:
+            self.three_d_frame = Plot3DFrame(self.notebook, self.engine)
+        except Exception:
+            self.three_d_frame = tk.Frame(self.notebook, bg="#202020")
+            tk.Label(self.three_d_frame, text="3D viewer loading...\n(PyVista + PySide6 recommended for full quality)").pack(expand=True)
         self.notebook.add(self.three_d_frame, text="  3D  ")
-        tk.Label(self.three_d_frame, text="3D Surfaces, Gradients & Vector Fields\n(PyVista primary path + Godot research in progress)",
-                 bg="#202020", fg="#777777", font=("Segoe UI", 12)).pack(expand=True)
 
     def _embed_simple_calculator(self):
         """Host the original calculator inside a tab."""
@@ -143,11 +158,6 @@ class HighTierMathApp(tk.Tk):
             app = OriginalSimpleCalculator()
             app.mainloop()
         threading.Thread(target=run_classic, daemon=True).start()
-
-    def _create_scientific_placeholder(self):
-        tk.Label(self.sci_frame, text="Scientific Expression Calculator\n\nComing in the next iteration — full SymPy-powered input with history.",
-                 bg="#202020", fg="#777777", font=("Segoe UI", 13)).pack(expand=True, pady=40)
-
 
 def main():
     app = HighTierMathApp()

@@ -1,5 +1,5 @@
 @echo off
-REM MathForge — High-Tier Scientific & Visual Math Tool Launcher
+REM MathForge — High-Tier Scientific & Visual Math Tool Launcher (Development)
 cd /d "%~dp0"
 
 echo Starting MathForge...
@@ -15,3 +15,7 @@ if errorlevel 1 (
     echo    pip install -r requirements.txt
     pause
 )
+
+REM For the standalone packaged version (no Python required on target machine):
+REM     python build_exe.py
+REM     # Then run dist\MathForge\MathForge.exe
